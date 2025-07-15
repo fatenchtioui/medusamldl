@@ -12,7 +12,12 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy as np
-from torch import cosine_similarity
+#from torch import cosine_similarity
+import torch
+import torch.nn.functional as F
+
+# Exemple de calcul de similarité cosinus
+
 from database import init_db_connection
 from fonction import safe_extract, safe_lower
 import plotly.express as px  # Ajoutez cette ligne avec les autres imports
