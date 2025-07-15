@@ -153,9 +153,15 @@ def run_deep_learning(profils_df):
         ])
 
         trainer = MatchingDLTrainer(input_dim=X_train.shape[1], model_type=model_type)
+        # metrics = trainer.train(X_train, y_train, epochs=epochs, lr=lr)
+        # st.session_state.dl_model = trainer
+        # st.session_state.dl_vectorizer = vectorizer
+        # st.success("✅ Modèle entraîné avec succès !")
+        # Dans run_dl.py, modifiez la partie après l'entraînement :
         metrics = trainer.train(X_train, y_train, epochs=epochs, lr=lr)
         st.session_state.dl_model = trainer
         st.session_state.dl_vectorizer = vectorizer
+        st.session_state.dl_metrics = metrics  # <-- Ajoutez cette ligne
         st.success("✅ Modèle entraîné avec succès !")
         st.json(metrics)
 

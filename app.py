@@ -646,49 +646,76 @@ elif choice == "Test Model Extracte ML":
                 st.stop()
 elif choice == "Deep Learning": 
   run_deep_learning(profils_df)
+  
 elif choice == "Comparaison ML/DL":
     st.title("📊 Comparaison des Performances ML vs DL")
     
-    # Vérifier si nous avons des données de performance
-    ml_metrics = st.session_state.get('metrics', None) if 'model' in st.session_state else None
-    dl_metrics = st.session_state.get('dl_metrics', None) if 'dl_model' in st.session_state else None
+    # Vérifier les données disponibles
+    has_ml = 'metrics' in st.session_state and st.session_state.metrics is not None
+    has_dl = 'dl_metrics' in st.session_state and st.session_state.dl_metrics is not None
     
-    if ml_metrics is None or dl_metrics is None:
-        st.warning("Veuillez d'abord entraîner les modèles ML et DL pour comparer")
+    if not has_ml and not has_dl:
+        st.warning("Veuillez d'abord entraîner au moins un modèle (ML ou DL)")
         st.stop()
     
-    # Créer un DataFrame pour la visualisation
-    comparison_data = pd.DataFrame({
-        'Modèle': ['Machine Learning', 'Deep Learning'],
-        'Précision': [ml_metrics['precision'], dl_metrics['accuracy']],
-        'Exactitude': [ml_metrics['accuracy'], dl_metrics['accuracy']]
-    })
+    # Préparer les données pour la comparaison
+    comparison_data = []
     
-    # Afficher les métriques sous forme de tableau
+    if has_ml:
+        ml_metrics = st.session_state.metrics
+        comparison_data.append({
+            'Modèle': 'Machine Learning',
+            'Type': getattr(st.session_state.get('model'), 'model_type', 'Random Forest'),
+            'Précision': ml_metrics.get('precision', 0),
+            'Exactitude': ml_metrics.get('accuracy', 0),
+            'Score': (ml_metrics.get('precision', 0) + ml_metrics.get('accuracy', 0)) / 2
+        })
+    
+    if has_dl:
+        dl_metrics = st.session_state.dl_metrics
+        comparison_data.append({
+            'Modèle': 'Deep Learning',
+            'Type': getattr(st.session_state.dl_model, 'model_type', 'ANN').upper(),
+            'Précision': dl_metrics.get('accuracy', 0),  # DL retourne accuracy
+            'Exactitude': dl_metrics.get('accuracy', 0),
+            'Score': dl_metrics.get('accuracy', 0)
+        })
+    
+    # Créer le DataFrame
+    df_comparison = pd.DataFrame(comparison_data)
+    
+    # Afficher les résultats
     st.subheader("📋 Métriques Comparées")
-    st.dataframe(comparison_data)
+    st.dataframe(df_comparison)
     
-    # Visualisation avec Plotly
+    # Visualisation
     st.subheader("📈 Visualisation des Performances")
     fig = px.bar(
-        comparison_data.melt(id_vars='Modèle'), 
+        df_comparison.melt(id_vars=['Modèle', 'Type']), 
         x='Modèle', 
         y='value', 
         color='variable',
         barmode='group',
         labels={'value': 'Score', 'variable': 'Métrique'},
-        title='Comparaison des Performances ML vs DL'
+        title='Comparaison ML vs DL',
+        color_discrete_map={
+            'Précision': '#636EFA',
+            'Exactitude': '#EF553B',
+            'Score': '#00CC96'
+        }
     )
     st.plotly_chart(fig)
     
-    # Ajouter des informations contextuelles
-    with st.expander("ℹ️ Interprétation des résultats"):
+    # Ajouter des conseils
+    with st.expander("💡 Conseils d'interprétation"):
         st.write("""
-        - **Machine Learning (ML)**: Généralement plus rapide à entraîner, idéal pour des datasets de taille moyenne.
-        - **Deep Learning (DL)**: Peut capturer des motifs complexes mais nécessite plus de données et de temps de calcul.
-        
-        Pour une comparaison équitable:
-        1. Utilisez le même dataset pour les deux modèles
-        2. Entraînez les deux modèles avec les mêmes paramètres de validation
-        3. Comparez les métriques sur le même jeu de test
-        """)  
+        - **ML (Random Forest/Logistic Regression)**:
+          - Rapide à entraîner
+          - Idéal pour petits/moyens datasets
+          - Moins bon sur données complexes
+          
+        - **DL (ANN/MLP/DNN)**:
+          - Plus long à entraîner
+          - Meilleur sur données complexes
+          - Nécessite plus de données
+        """)
