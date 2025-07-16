@@ -35,6 +35,14 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import make_pipeline
+import spacy
+
+try:
+    nlp = spacy.load("fr_core_news_sm")
+except OSError:
+    from spacy.cli import download
+    download("fr_core_news_sm")
+    nlp = spacy.load("fr_core_news_sm")
 
 from run_dl import run_deep_learning
 # --- Setup (à adapter à ta config) ---*
