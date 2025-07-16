@@ -6,6 +6,14 @@ from sqlalchemy import create_engine, text
 from nltk.corpus import stopwords
 
 from database import init_db_connection
+from nltk.corpus import stopwords
+import nltk
+
+try:
+    stop_words = set(stopwords.words('french'))
+except LookupError:
+    nltk.download('stopwords')
+    stop_words = set(stopwords.words('french'))
 
 # Logger
 logger = logging.getLogger(__name__)
