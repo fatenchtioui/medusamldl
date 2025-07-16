@@ -14,6 +14,14 @@ try:
 except LookupError:
     nltk.download('stopwords')
     stop_words = set(stopwords.words('french'))
+import spacy
+
+try:
+    nlp = spacy.load("fr_core_news_sm")
+except OSError:
+    from spacy.cli import download
+    download("fr_core_news_sm")
+    nlp = spacy.load("fr_core_news_sm")
 
 # Logger
 logger = logging.getLogger(__name__)
