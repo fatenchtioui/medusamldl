@@ -8,6 +8,7 @@ import streamlit as st
 #nlp = spacy.load("fr_core_news_sm")
 import spacy
 
+# Vérifier si le modèle est installé, sinon le télécharger automatiquement
 try:
     nlp = spacy.load("fr_core_news_sm")
 except OSError:
