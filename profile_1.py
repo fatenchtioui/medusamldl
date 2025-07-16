@@ -5,7 +5,15 @@ from sqlalchemy import create_engine, text
 import streamlit as st
 
 # Chargement du modèle NLP (chargé une seule fois)
-nlp = spacy.load("fr_core_news_sm")
+#nlp = spacy.load("fr_core_news_sm")
+import spacy
+
+try:
+    nlp = spacy.load("fr_core_news_sm")
+except OSError:
+    from spacy.cli import download
+    download("fr_core_news_sm")
+    nlp = spacy.load("fr_core_news_sm")
 
 def categorize_experience(exp):
     try:
