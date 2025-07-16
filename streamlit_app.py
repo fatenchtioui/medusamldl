@@ -37,6 +37,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import make_pipeline
 import spacy
 
+# Vérifier si le modèle est installé, sinon le télécharger automatiquement
 try:
     nlp = spacy.load("fr_core_news_sm")
 except OSError:
